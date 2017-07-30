@@ -28,7 +28,8 @@ midi_max = 127
 
 y_buffer = []
 # Define Channel name
-channel_name = 'sensor_data'
+sensor_channel = 'sensor_data'
+artist_channel = 'artist_mode'
 
 # Standard PubNub configuration under V4 API
 pnconfig = PNConfiguration()
@@ -36,11 +37,14 @@ pnconfig = PNConfiguration()
 pnconfig.publish_key = 'pub-c-ff1da703-9b2a-41df-bdd4-96e21bbfb0b8'
 pnconfig.subscribe_key = 'sub-c-d1024ca8-74bb-11e7-8153-0619f8945a4f'
 
-pubnub = PubNub(pnconfig)
+pubnub_sensor = PubNub(pnconfig)
+pubnub_artist = PubNub(pnconfig)
 
 # Define the output port
 output_IAC = mido.open_output('IAC Driver Bus 1')
 #output_twister = mido.open_output('Midi Fighter Twister')
+
+print("Subscribed to PunNub...")
 
 def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax,OldValue):
     OldRange = (OldMax - OldMin)
@@ -48,27 +52,14 @@ def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax,OldValue):
     NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
     return NewValue
 
-# Define a callback for publishing a message onto the stream
-def my_publish_callback(envelope, status):
-    # Check whether request successfully completed or not
-    if not status.is_error():
-        pass  # Message successfully published to specified channel.
-    else:
-        pass  # Handle message publish error. Check 'category' property to find out possible issue
-        # because of which request did fail.
-        # Request can be resent using: [status retry];
-
 ### MySubscribeCallback class
-class MySubscribeCallback(SubscribeCallback):
-    def status(self, pubnub, status):
-        if status.category == PNStatusCategory.PNConnectedCategory:
-            pubnub.publish().channel(channel_name).message("An audience member has connected to the stream!").async(my_publish_callback)
-
+class MySubscribeCallbackSensor(SubscribeCallback):
     def message(self, pubnub, message):
 
         try:
             if DEBUG:
                 print ("Received: ", message.message)
+
             payload = message.message # assign message contents to variable "payload" (avoids confusion with mido.Message convention)
 
             x_midi = int(scaleValuesToMidi(sensor_min,sensor_max,midi_min,midi_max,payload['x']))
@@ -84,8 +75,38 @@ class MySubscribeCallback(SubscribeCallback):
         except Exception:
             print ("there was no valid key in the PubNub message")
 
+### MySubscribeCallback class
+class MySubscribeCallbackArtist(SubscribeCallback):
+    def message(self, pubnub, message):
+
+        try:
+            if DEBUG:
+                print ("Received: ", message.message)
+
+            payload = message.message # assign message contents to variable "payload" (avoids confusion with mido.Message convention)
+
+            if payload == 'bassDrop0':
+                output_IAC.send(mido.Message('note_on',note=48,velocity=127))
+            elif payload == 'bassDrop1':
+                output_IAC.send(mido.Message('note_on',note=49,velocity=127))
+            elif payload == 'bassDrop2':
+                output_IAC.send(mido.Message('note_on',note=50,velocity=127))
+            elif payload == 'bassDrop3':
+                output_IAC.send(mido.Message('note_on',note=51,velocity=127))
+            elif payload == 'bassDrop4':
+                output_IAC.send(mido.Message('note_on',note=52,velocity=127))
+
+        except Exception:
+            print ("there was no valid key in the PubNub message")
+
 # Add a listener to PubNub object with callback function defined above
-pubnub.add_listener(MySubscribeCallback())
+pubnub_sensor.add_listener(MySubscribeCallbackSensor())
 # Subscribe to the PubNub channel
-pubnub.subscribe().channels(channel_name).execute()
+pubnub_sensor.subscribe().channels(sensor_channel).execute()
+
+# Add a listener to PubNub object with callback function defined above
+pubnub_artist.add_listener(MySubscribeCallbackArtist())
+# Subscribe to the PubNub channel
+pubnub_artist.subscribe().channels(artist_channel).execute()
+#
 #
