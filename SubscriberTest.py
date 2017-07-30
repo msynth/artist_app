@@ -36,6 +36,12 @@ pubnub = PubNub(pnconfig)
 output_IAC = mido.open_output('IAC Driver Bus 1')
 output_twister = mido.open_output('USB MIDI Device')
 
+def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax):
+    OldRange = (OldMax - OldMin)
+    NewRange = (NewMax - NewMin)
+    NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
+    return NewValue
+
 # Define a callback for publishing a message onto the stream
 def my_publish_callback(envelope, status):
     # Check whether request successfully completed or not
