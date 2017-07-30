@@ -10,19 +10,21 @@ import mido
 # import deepcopy capabilities
 import copy
 
-# Query connected input and output devices
-print("input names: ")
-print(mido.get_input_names())
-print("output names: ")
-print(mido.get_output_names())
-
 # Verbose printing if DEBUG is true
-DEBUG = True
+DEBUG = False
+
+#sensor min max
+sensor_min = -1
+sensor_max = 1
+
+#midi min max
+midi_min = 0
+midi_max = 127
 
 # ===================================================
 
 # Define Channel name
-channel_name = 'accel_data'
+channel_name = 'sensor_data'
 
 # Standard PubNub configuration under V4 API
 pnconfig = PNConfiguration()
@@ -34,9 +36,9 @@ pubnub = PubNub(pnconfig)
 
 # Define the output port
 output_IAC = mido.open_output('IAC Driver Bus 1')
-output_twister = mido.open_output('USB MIDI Device')
+output_twister = mido.open_output('Midi Fighter Twister')
 
-def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax):
+def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax,OldValue):
     OldRange = (OldMax - OldMin)
     NewRange = (NewMax - NewMin)
     NewValue = (((OldValue - OldMin) * NewRange) / OldRange) + NewMin
@@ -60,13 +62,20 @@ class MySubscribeCallback(SubscribeCallback):
             pubnub.publish().channel(channel_name).message("An audience member has connected to the stream!").async(my_publish_callback)
 
     def message(self, pubnub, message):
-        print ("Received: ", message.message)
 
         try:
-
+            if DEBUG:
+                print ("Received: ", message.message)
             payload = message.message # assign message contents to variable "payload" (avoids confusion with mido.Message convention)
 
-            output_IAC.send(mido.Message(payload['type'],channel=payload['channel'],control=payload['control'],value=payload['value']))
+            x_midi = int(scaleValuesToMidi(sensor_min,sensor_max,midi_min,midi_max,payload['x']))
+            y_midi = int(scaleValuesToMidi(sensor_min,sensor_max,midi_min,midi_max,payload['y']))
+
+            if DEBUG:
+                print(x_midi, y_midi)
+
+            output_IAC.send(mido.Message('control_change',channel=0,control=12,value=x_midi))
+            output_IAC.send(mido.Message('control_change',channel=0,control=13,value=y_midi))
 
         except Exception:
             print ("there was no valid key in the PubNub message")

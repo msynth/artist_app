@@ -12,7 +12,7 @@ import mido
 DEBUG = False
 
 # Define Channel name
-channel_name = 'accel_data'
+channel_name = 'sensor_data'
 
 # Standard PubNub object configuration under V4 API
 pnconfig = PNConfiguration()
@@ -31,7 +31,7 @@ def publish_callback(result, status):
 
 print("Entering main loop. Press Control-C to exit.")
 
-with mido.open_input('USB MIDI Device') as inport:
+with mido.open_input('Midi Fighter Twister') as inport:
     print ("Succesfully connected to MIDI FIGHTER TWISTER")
     for message in inport:
         # Only consider note_on and note_off messages, filter out control change messaeges
