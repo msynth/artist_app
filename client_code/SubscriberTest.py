@@ -10,12 +10,15 @@ import mido
 # import deepcopy capabilities
 import copy
 
+counter = 0
+threshold = 5
+
 # Verbose printing if DEBUG is true
-DEBUG = False
+DEBUG = True
 
 #sensor min max
-sensor_min = -1
-sensor_max = 1
+sensor_min = -0.5
+sensor_max = 0.5
 
 #midi min max
 midi_min = 0
@@ -23,6 +26,7 @@ midi_max = 127
 
 # ===================================================
 
+y_buffer = []
 # Define Channel name
 channel_name = 'sensor_data'
 
@@ -36,7 +40,7 @@ pubnub = PubNub(pnconfig)
 
 # Define the output port
 output_IAC = mido.open_output('IAC Driver Bus 1')
-output_twister = mido.open_output('Midi Fighter Twister')
+#output_twister = mido.open_output('Midi Fighter Twister')
 
 def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax,OldValue):
     OldRange = (OldMax - OldMin)
@@ -48,8 +52,7 @@ def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax,OldValue):
 def my_publish_callback(envelope, status):
     # Check whether request successfully completed or not
     if not status.is_error():
-        print ("entered status.is_error loop")
-        #pass  # Message successfully published to specified channel.
+        pass  # Message successfully published to specified channel.
     else:
         pass  # Handle message publish error. Check 'category' property to find out possible issue
         # because of which request did fail.
@@ -73,6 +76,7 @@ class MySubscribeCallback(SubscribeCallback):
 
             if DEBUG:
                 print(x_midi, y_midi)
+
 
             output_IAC.send(mido.Message('control_change',channel=0,control=12,value=x_midi))
             output_IAC.send(mido.Message('control_change',channel=0,control=13,value=y_midi))
