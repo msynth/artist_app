@@ -9,7 +9,7 @@ import mido
 
 
 # Verbose printing if DEBUG is true
-DEBUG = True
+DEBUG = False
 
 # Define Channel name
 channel_name = 'accel_data'
@@ -24,7 +24,7 @@ pubnub = PubNub(pnconfig)
 
 # New V4 Python API requires a callback
 def publish_callback(result, status):
-    print("Message sent!")
+    print(result)
     pass  # Do nothing
     # Handle PNPublishResult and PNStatus
 
@@ -37,13 +37,12 @@ with mido.open_input('USB MIDI Device') as inport:
         # Only consider note_on and note_off messages, filter out control change messaeges
         if message.type == "control_change":
 
-            # Log time to calculate roundtrip latency
-            #stamp = datetime.utcnow()
-
-
             # Data to be transmitted. Parse "message" list into constituent parts
             data = {
-                'control_change': message
+                'type': message.type,
+                'channel': message.channel,
+                'control': message.control,
+                'value': message.value
             }
 
             if DEBUG:

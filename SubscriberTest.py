@@ -60,23 +60,7 @@ class MySubscribeCallback(SubscribeCallback):
 
             payload = message.message # assign message contents to variable "payload" (avoids confusion with mido.Message convention)
 
-            print(payload)
-            # payload = message.message  # assign message contents to variable "payload" (avoids confusion with mido.Message convention)
-            #
-            # if payload['type'] == 'note_on':
-            #     if payload['trapify'] == 1:
-            #         color = 14  # Red RGB
-            #     else:
-            #         color = 127  # Blue RGB
-            #
-            #     # Send message through midi ports using values defined from payload
-            #     output_IAC.send(mido.Message('note_on',note=payload['note'],velocity=127))
-            #     output_MF3D.send(mido.Message('note_on',note=payload['note'],velocity=color))
-            #
-            # elif message.message['type'] == 'note_off':
-            #     # Send message through midi ports using values defined from payload
-            #     output_IAC.send(mido.Message('note_off',note=payload['note'],velocity=127))
-            #     output_MF3D.send(mido.Message('note_off',note=payload['note'],velocity=127))
+            output_IAC.send(mido.Message(payload['type'],channel=payload['channel'],control=payload['control'],value=payload['value']))
 
         except Exception:
             print ("there was no valid key in the PubNub message")
