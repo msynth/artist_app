@@ -30,6 +30,7 @@ y_buffer = []
 # Define Channel name
 sensor_channel = 'sensor_data'
 artist_channel = 'artist_mode'
+button_channel = 'update_samples'
 
 # Standard PubNub configuration under V4 API
 pnconfig = PNConfiguration()
@@ -39,12 +40,20 @@ pnconfig.subscribe_key = 'sub-c-d1024ca8-74bb-11e7-8153-0619f8945a4f'
 
 pubnub_sensor = PubNub(pnconfig)
 pubnub_artist = PubNub(pnconfig)
+pubnub_buttons = PubNub(pnconfig)
 
 # Define the output port
 output_IAC = mido.open_output('IAC Driver Bus 1')
 #output_twister = mido.open_output('Midi Fighter Twister')
 
-print("Subscribed to PunNub...")
+print("Successfully subscribed to PubNub...")
+
+def publish_callback(result, status):
+    print("Pushed strings to PubNub...")
+
+    # Handle PNPublishResult and PNStatus
+pubnub_buttons.publish().channel(button_channel).message(['Pub', 'Nub', 'Outsidelands','Horn','Drop']).async(publish_callback)
+
 
 def scaleValuesToMidi(OldMin,OldMax,NewMin,NewMax,OldValue):
     OldRange = (OldMax - OldMin)
