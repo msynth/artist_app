@@ -2,7 +2,7 @@
 
 # Usage Instructions
 
-1.) When working with Python, it highly recommended to use virtual environments to isolate python versions and package dependancies. I like to use Anaconda, which supplies its own distribution of Python. Download and install the Python 3.6 version of Anaconda (you can specify a conda environment after installation to use python 2.7 instead of python 3.6)
+1.) When working with Python, it is highly recommended to use virtual environments to isolate python versions and package dependancies. I like to use Anaconda, which supplies its own distribution of Python. Download and install the Python 3.6 version of Anaconda (you can specify a conda environment after installation to use python 2.7 instead of python 3.6)
 
 https://www.continuum.io/downloads
 
