@@ -1,4 +1,7 @@
-# artist_app
+# Artist App Python Client
+This python script instantiates a pubnub instance that is subscribed to the accelerometer data streaming from the aggregated values in PubNub functions.
+
+The python script also enables buttons on the client phone app to trigger midi commands mapped to ableton.
 
 # Usage Instructions
 
@@ -38,6 +41,6 @@ It should say python 3.6
 `cd artist_app/client_code`
 
 10.) Run the python script
-`python SubscriberTest`
+`python SubscriberTest.py`
 
 By default, the python script will print out messages into the console.
