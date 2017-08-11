@@ -33,6 +33,10 @@ It should say python 3.6
 
 `pip install mido`
 
+Then install rt-midi to access the ports of connected IO MIDI devices
+
+`pip install python-rtmidi`
+
 8.) Install [pubnub](https://www.pubnub.com/docs/python/pubnub-python-sdk) (real-time datastream network)
 
 `pip install 'pubnub>=4.0.13'`
@@ -40,7 +44,11 @@ It should say python 3.6
 9.) Navigate to directory containing the code
 `cd artist_app/client_code`
 
-10.) Run the python script
+10.) Ensure that the "IAC Driver" is enabled in MacOS' "Audio MIDI Preferences"
+
+![alt text](./IACDriver.png)
+
+11.) Run the python script
 `python SubscriberTest.py`
 
 By default, the python script will print out messages into the console.
