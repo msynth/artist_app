@@ -46,7 +46,7 @@ Then install rt-midi to access the ports of connected IO MIDI devices
 
 10.) Ensure that the "IAC Driver" is enabled in MacOS' "Audio MIDI Preferences"
 
-<img src="./IACDriver.png" alt="Drawing" style="width: 200px; height: 300px"/>
+<img src="./IACDriver.png" alt="Drawing" style="width: 800px; height: 100px"/>
 
 11.) Run the python script
 `python SubscriberTest.py`
